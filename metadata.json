@@ -2,5 +2,7 @@
   "name": "JEE MISSION 21",
   "description": "A 21-day high-intensity JEE & NIOS backlog mastery, daily lecture tracker, planner, and analytics platform powered by Firebase.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
