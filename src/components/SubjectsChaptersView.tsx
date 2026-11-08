@@ -8,9 +8,11 @@ import {
   X,
   AlertCircle,
   BookOpen,
+  RefreshCw,
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import { ChapterDoc, ChapterPriority, SubjectName } from '../types/mission';
+import { DRONA_CHAPTER_BLUEPRINTS } from '../utils/dronaSyllabus';
 
 export const SubjectsChaptersView: React.FC<{
   onNavigateToChapterLectures: (chapterId: string) => void;
@@ -23,6 +25,7 @@ export const SubjectsChaptersView: React.FC<{
     updateChapter,
     deleteChapter,
     generateChapterLecturesBatch,
+    resetOrRestoreMissionData,
   } = useMission();
 
   const [selectedSubject, setSelectedSubject] = useState<'All' | SubjectName>('All');
@@ -31,6 +34,7 @@ export const SubjectsChaptersView: React.FC<{
   const [totalLectures, setTotalLectures] = useState('25');
   const [priority, setPriority] = useState<ChapterPriority>('High');
   const [formError, setFormError] = useState<string | null>(null);
+  const [syncingDrona, setSyncingDrona] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -69,6 +73,15 @@ export const SubjectsChaptersView: React.FC<{
     setTotalLectures('25');
   };
 
+  const handleSyncDronaSyllabus = async () => {
+    setSyncingDrona(true);
+    try {
+      await resetOrRestoreMissionData();
+    } finally {
+      setSyncingDrona(false);
+    }
+  };
+
   const startEdit = (ch: ChapterDoc) => {
     setEditingId(ch.id);
     setEditTitle(ch.title);
@@ -95,29 +108,41 @@ export const SubjectsChaptersView: React.FC<{
       <div className="bg-[#111A2D] border border-[#1E293B] rounded-2xl p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white font-display">
-            Subjects & Syllabus Chapters
+            Drona JEE 2.0 2027 — Subjects & Syllabus Chapters
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Preloaded with Organic Chemistry (32 lectures) & Physical Chemistry (47 lectures). Add or customize any chapter across your JEE syllabus.
+            Official Mission JEET Batch Planner synced: Organic Chemistry (32 lectures), Physical Chemistry (47 lectures), Inorganic (32 lectures), Physics (147 lectures) & Mathematics (126 lectures).
           </p>
         </div>
 
-        {/* Subject Filter Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-[#0C1424] border border-[#1E293B] rounded-xl self-start">
-          {(['All', 'Physics', 'Chemistry', 'Mathematics'] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setSelectedSubject(tab)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
-                selectedSubject === tab
-                  ? 'bg-[#8B5CF6] text-white'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3 self-start">
+          {/* Subject Filter Tabs */}
+          <div className="flex items-center gap-1 p-1 bg-[#0C1424] border border-[#1E293B] rounded-xl">
+            {(['All', 'Physics', 'Chemistry', 'Mathematics'] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setSelectedSubject(tab)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap cursor-pointer ${
+                  selectedSubject === tab
+                    ? 'bg-[#8B5CF6] text-white'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleSyncDronaSyllabus}
+            disabled={syncingDrona}
+            className="h-9 px-3.5 rounded-xl bg-[#16223B] hover:bg-[#1E293B] border border-[#2B3954] text-xs font-semibold text-slate-200 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-[#06B6D4] ${syncingDrona ? 'animate-spin' : ''}`} />
+            <span>Sync Drona 2.0 Planner</span>
+          </button>
         </div>
       </div>
 
@@ -129,7 +154,7 @@ export const SubjectsChaptersView: React.FC<{
       >
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-white font-display">
-            Add Syllabus Chapter
+            Add Custom Syllabus Chapter
           </h2>
           <span className="text-xs text-slate-400 font-mono tabular-nums">
             Total Chapters: {chapters.length} · Total Backlog: {summary.totalBacklogLectures} lectures
@@ -169,7 +194,7 @@ export const SubjectsChaptersView: React.FC<{
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., Chemical Bonding & Molecular Structure"
+              placeholder="e.g., Electrochemistry & Surface Chemistry"
               className="w-full h-10 px-3 rounded-lg bg-[#0C1424] border border-[#1E293B] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6]"
             />
           </div>
@@ -237,6 +262,7 @@ export const SubjectsChaptersView: React.FC<{
                 ? Math.min(100, Math.round((effectiveCompleted / ch.totalLectures) * 100))
                 : 0;
             const isEditing = editingId === ch.id;
+            const blueprint = DRONA_CHAPTER_BLUEPRINTS.find((b) => b.id === ch.id);
 
             return (
               <div
@@ -245,10 +271,11 @@ export const SubjectsChaptersView: React.FC<{
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-slate-400 font-mono">
                       {ch.subject} · {ch.priority} Priority
+                      {blueprint ? ` · ${blueprint.dateRange}` : ''}
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
                         onClick={() => startEdit(ch)}
@@ -320,9 +347,15 @@ export const SubjectsChaptersView: React.FC<{
                     </div>
                   ) : (
                     <>
-                      <h3 className="text-base font-bold text-white font-display mb-3">
+                      <h3 className="text-base font-bold text-white font-display mb-1.5">
                         {ch.title}
                       </h3>
+
+                      {blueprint && (
+                        <p className="text-xs text-slate-400 leading-relaxed mb-3 line-clamp-2">
+                          {blueprint.subtopicsSummary}
+                        </p>
+                      )}
 
                       <div className="flex items-baseline justify-between text-xs font-mono tabular-nums mb-1.5">
                         <span className="text-slate-300">
@@ -387,7 +420,7 @@ export const SubjectsChaptersView: React.FC<{
                     >
                       <Sparkles className="w-3 h-3 text-[#06B6D4]" />
                       <span>
-                        +Populate {Math.min(10, ch.totalLectures - trackedInChapter.length)} Slots
+                        +Load Next {Math.min(10, ch.totalLectures - trackedInChapter.length)} Drona Lectures
                       </span>
                     </button>
                   )}

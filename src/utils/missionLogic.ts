@@ -7,6 +7,10 @@ import {
   TaskDoc,
   UserProfile,
 } from '../types/mission';
+import {
+  buildDronaInitialChaptersAndLectures,
+  DRONA_CHAPTER_BLUEPRINTS,
+} from './dronaSyllabus';
 
 export function getTodayISO(): string {
   const now = new Date();
@@ -366,6 +370,61 @@ export function computeAnalyticsReport(
   };
 }
 
+export function getNextDronaLecturesForChapter(
+  ch: ChapterDoc,
+  existingCount: number,
+  count: number,
+  uid: string
+): LectureDoc[] {
+  const bp = DRONA_CHAPTER_BLUEPRINTS.find((b) => b.id === ch.id);
+  const toCreate = Math.max(1, Math.min(40, count));
+  const createdList: LectureDoc[] = [];
+
+  for (let i = 0; i < toCreate; i++) {
+    const zeroIdx = existingCount + i;
+    const seqNum = zeroIdx + 1;
+    const numStr = String(seqNum).padStart(2, '0');
+    const id = sanitizeId(`lec_${ch.id}_${numStr}_${Date.now()}_${i}`);
+    const tpl = bp?.sampleLectures[zeroIdx];
+
+    if (tpl) {
+      createdList.push({
+        id,
+        uid,
+        title: `${tpl.code}: ${tpl.title}`,
+        subject: ch.subject,
+        chapterId: ch.id,
+        chapterTitle: ch.title,
+        durationMinutes: tpl.durationMinutes || 90,
+        playbackSpeed: 1.5,
+        actualWatchMinutes: 60,
+        completed: false,
+        completedDate: '',
+        notes: `${tpl.notes} (Scheduled: ${tpl.scheduledDate})`,
+      });
+    } else {
+      createdList.push({
+        id,
+        uid,
+        title: `L${numStr}: ${ch.title} — Drona 2.0 Lecture ${seqNum}`,
+        subject: ch.subject,
+        chapterId: ch.id,
+        chapterTitle: ch.title,
+        durationMinutes: 90,
+        playbackSpeed: 1.5,
+        actualWatchMinutes: 60,
+        completed: false,
+        completedDate: '',
+        notes: bp
+          ? `Drona JEE 2.0 (${bp.dateRange}): ${bp.subtopicsSummary}`
+          : `High-yield ${ch.title} lecture ${seqNum} notes & PYQs.`,
+      });
+    }
+  }
+
+  return createdList;
+}
+
 export interface InitialSeedBundle {
   profile: UserProfile;
   subjects: SubjectDoc[];
@@ -408,7 +467,7 @@ export function generateInitialMissionData(
       uid,
       name: 'Chemistry',
       dailyTarget: 7,
-      totalLectures: 147,
+      totalLectures: 111,
       completedLectures: 0,
     },
     {
@@ -421,311 +480,12 @@ export function generateInitialMissionData(
     },
   ];
 
-  // Preload Chemistry (Organic Chemistry: 32 lectures, Physical Chemistry: 47 lectures, Inorganic Chemistry: 68 lectures)
-  // Plus Physics and Mathematics chapters totaling 420 lectures
-  const chapters: ChapterDoc[] = [
-    {
-      id: 'ch_chem_organic',
-      uid,
-      subject: 'Chemistry',
-      title: 'Organic Chemistry',
-      totalLectures: 32,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_chem_physical',
-      uid,
-      subject: 'Chemistry',
-      title: 'Physical Chemistry',
-      totalLectures: 47,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_chem_inorganic',
-      uid,
-      subject: 'Chemistry',
-      title: 'Inorganic Chemistry & Coordination',
-      totalLectures: 68,
-      completedLectures: 0,
-      priority: 'Medium',
-    },
-    {
-      id: 'ch_phys_electro',
-      uid,
-      subject: 'Physics',
-      title: 'Electrodynamics & Capacitance',
-      totalLectures: 52,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_phys_mech',
-      uid,
-      subject: 'Physics',
-      title: 'Mechanics & Rotational Dynamics',
-      totalLectures: 55,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_phys_optics',
-      uid,
-      subject: 'Physics',
-      title: 'Optics, Waves & Modern Physics',
-      totalLectures: 40,
-      completedLectures: 0,
-      priority: 'Medium',
-    },
-    {
-      id: 'ch_math_calc',
-      uid,
-      subject: 'Mathematics',
-      title: 'Differential & Integral Calculus',
-      totalLectures: 48,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_math_coord',
-      uid,
-      subject: 'Mathematics',
-      title: 'Coordinate Geometry & Vectors 3D',
-      totalLectures: 42,
-      completedLectures: 0,
-      priority: 'High',
-    },
-    {
-      id: 'ch_math_alg',
-      uid,
-      subject: 'Mathematics',
-      title: 'Matrices, Complex Numbers & Probability',
-      totalLectures: 36,
-      completedLectures: 0,
-      priority: 'Medium',
-    },
-  ];
+  // Preload official Drona JEE 2.0 2027 (Mission JEET) syllabus chapters, lectures & test milestones
+  const dronaSeed = buildDronaInitialChaptersAndLectures(uid);
+  const chapters: ChapterDoc[] = dronaSeed.chapters;
+  const lectures: LectureDoc[] = dronaSeed.lectures;
 
-  // Create actionable initial lectures across Organic Chemistry, Physical Chemistry, Physics, and Math
-  const lectures: LectureDoc[] = [
-    // Organic Chemistry (Part of 32-lecture syllabus)
-    {
-      id: 'lec_org_01',
-      uid,
-      title: 'L01: IUPAC Nomenclature & Structural Isomerism',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_organic',
-      chapterTitle: 'Organic Chemistry',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Focus on bicyclic & spiro priority rules + PYQ exceptions.',
-    },
-    {
-      id: 'lec_org_02',
-      uid,
-      title: 'L02: General Organic Chemistry — Inductive & Hyperconjugation',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_organic',
-      chapterTitle: 'Organic Chemistry',
-      durationMinutes: 95,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 63,
-      completed: false,
-      completedDate: '',
-      notes: 'Carbocation stability order and resonance energy comparison.',
-    },
-    {
-      id: 'lec_org_03',
-      uid,
-      title: 'L03: GOC — Aromaticity, Acidity & Basicity Trends',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_organic',
-      chapterTitle: 'Organic Chemistry',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Ortho effect in benzoic acids & aniline basicity in aqueous phase.',
-    },
-    {
-      id: 'lec_org_04',
-      uid,
-      title: 'L04: Stereoisomerism — Chirality, R/S & E/Z Configuration',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_organic',
-      chapterTitle: 'Organic Chemistry',
-      durationMinutes: 105,
-      playbackSpeed: 1.75,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Fischer-to-Wedge conversion and meso compounds.',
-    },
-    {
-      id: 'lec_org_05',
-      uid,
-      title: 'L05: Reaction Mechanisms — SN1, SN2, E1, E2 & E1cb',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_organic',
-      chapterTitle: 'Organic Chemistry',
-      durationMinutes: 100,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 67,
-      completed: false,
-      completedDate: '',
-      notes: 'Solvent effects (polar protic vs aprotic) and Saytzeff vs Hofmann.',
-    },
-    // Physical Chemistry (Part of 47-lecture syllabus)
-    {
-      id: 'lec_phychem_01',
-      uid,
-      title: 'L01: Mole Concept, Limiting Reagent & Eudiometry',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_physical',
-      chapterTitle: 'Physical Chemistry',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Equivalent weight in redox & back titration numericals.',
-    },
-    {
-      id: 'lec_phychem_02',
-      uid,
-      title: 'L02: Chemical Thermodynamics — First Law & Thermochemistry',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_physical',
-      chapterTitle: 'Physical Chemistry',
-      durationMinutes: 105,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 70,
-      completed: false,
-      completedDate: '',
-      notes: 'Reversible vs irreversible adiabatic expansion work formulas.',
-    },
-    {
-      id: 'lec_phychem_03',
-      uid,
-      title: 'L03: Ionic Equilibrium — pH of Buffers, Hydrolysis & Ksp',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_physical',
-      chapterTitle: 'Physical Chemistry',
-      durationMinutes: 110,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 73,
-      completed: false,
-      completedDate: '',
-      notes: 'Henderson equation & simultaneous solubility calculations.',
-    },
-    {
-      id: 'lec_phychem_04',
-      uid,
-      title: 'L04: Electrochemistry — Nernst Equation & Conductance',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_physical',
-      chapterTitle: 'Physical Chemistry',
-      durationMinutes: 95,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 63,
-      completed: false,
-      completedDate: '',
-      notes: 'Kohlrausch law and Faraday electrolysis laws.',
-    },
-    {
-      id: 'lec_phychem_05',
-      uid,
-      title: 'L05: Chemical Kinetics — First Order & Arrhenius Equation',
-      subject: 'Chemistry',
-      chapterId: 'ch_chem_physical',
-      chapterTitle: 'Physical Chemistry',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Parallel & sequential reaction kinetics for JEE Advanced.',
-    },
-    // Physics Backlog
-    {
-      id: 'lec_phys_01',
-      uid,
-      title: 'L01: Electrostatics — Gauss Law & Electric Potential',
-      subject: 'Physics',
-      chapterId: 'ch_phys_electro',
-      chapterTitle: 'Electrodynamics & Capacitance',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Cavity inside solid non-conducting sphere & self-energy.',
-    },
-    {
-      id: 'lec_phys_02',
-      uid,
-      title: 'L02: Capacitors — Dielectric Slab Insertion & RC Circuits',
-      subject: 'Physics',
-      chapterId: 'ch_phys_electro',
-      chapterTitle: 'Electrodynamics & Capacitance',
-      durationMinutes: 95,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 63,
-      completed: false,
-      completedDate: '',
-      notes: 'Transient state charge growth & heat dissipation in switches.',
-    },
-    {
-      id: 'lec_phys_03',
-      uid,
-      title: 'L03: Rigid Body Dynamics — Rolling with & without Slipping',
-      subject: 'Physics',
-      chapterId: 'ch_phys_mech',
-      chapterTitle: 'Mechanics & Rotational Dynamics',
-      durationMinutes: 105,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 70,
-      completed: false,
-      completedDate: '',
-      notes: 'Conservation of angular momentum about instantaneous axis.',
-    },
-    // Mathematics Backlog
-    {
-      id: 'lec_math_01',
-      uid,
-      title: 'L01: Definite Integration — King Property & Leibniz Rule',
-      subject: 'Mathematics',
-      chapterId: 'ch_math_calc',
-      chapterTitle: 'Differential & Integral Calculus',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Solve 25 JEE Main + Advanced PYQs after lecture.',
-    },
-    {
-      id: 'lec_math_02',
-      uid,
-      title: 'L02: Vectors & 3D Geometry — Skew Lines & Shortest Distance',
-      subject: 'Mathematics',
-      chapterId: 'ch_math_coord',
-      chapterTitle: 'Coordinate Geometry & Vectors 3D',
-      durationMinutes: 90,
-      playbackSpeed: 1.5,
-      actualWatchMinutes: 60,
-      completed: false,
-      completedDate: '',
-      notes: 'Scalar triple product & projection formulas.',
-    },
-  ];
-
-  // The 8 Required Default Daily Tasks + NIOS Manager items
+  // The 8 Required Default Daily Tasks + Drona JEE 2.0 Test Milestones + NIOS Manager items
   const tasks: TaskDoc[] = [
     {
       id: 'task_def_phys_lec',
@@ -823,6 +583,7 @@ export function generateInitialMissionData(
       isDefault: true,
       niosType: 'None',
     },
+    ...dronaSeed.milestoneTasks,
     // Preloaded NIOS Manager items across Subject, Assignment, Practical, ExamPrep, Revision
     {
       id: 'task_nios_subj_phys',
@@ -927,9 +688,9 @@ export function generateInitialMissionData(
       id: 'note_day_01',
       uid,
       date: todayISO,
-      title: 'Day 1 Mission Briefing — 20 Lectures/Day Protocol',
+      title: 'Drona JEE 2.0 2027 (Mission JEET) — 21-Day Backlog Protocol',
       content:
-        'Target locked: 7 Physics + 7 Chemistry + 6 Mathematics = 20 lectures/day at 1.5x–1.75x speed. Organic Chemistry (32 lectures) and Physical Chemistry (47 lectures) prioritized for week 1–2 completion.',
+        'Official Drona JEE 2.0 2027 Batch Planner synced: Organic Chemistry (32 lectures: IUPAC 6, Isomerism 8, GOC 9, Hydrocarbons 7, Purification/Env 2), Physical Chemistry (47 lectures: Mole Concept 10, Atomic Structure 7, Gaseous State 6, Thermodynamics 8, Redox 3, Chemical Eq 5, Ionic Eq 8), Inorganic Chemistry (32 lectures), Physics (147 lectures) & Mathematics (126 lectures). Daily Target: 7 Physics + 7 Chemistry + 6 Math = 20 lectures/day.',
     },
   ];
 

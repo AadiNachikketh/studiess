@@ -44,6 +44,7 @@ import {
   computeDashboardSummary,
   build21DayCalendar,
   generateInitialMissionData,
+  getNextDronaLecturesForChapter,
   getTodayISO,
   sanitizeId,
   DashboardSummary,
@@ -141,7 +142,7 @@ interface MissionContextValue {
 
 const MissionContext = createContext<MissionContextValue | null>(null);
 
-const STORAGE_KEY_PREFIX = 'jee_mission_21_state_v1_';
+const STORAGE_KEY_PREFIX = 'jee_mission_21_state_v2_drona_';
 const ACTIVE_SESSION_KEY = 'jee_mission_21_active_session_v1';
 
 export const MissionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -925,28 +926,12 @@ export const MissionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const ch = chapters.find((c) => c.id === chapterId);
       if (!ch) return;
       const existingForCh = lectures.filter((l) => l.chapterId === chapterId);
-      const startNum = existingForCh.length + 1;
-      const toCreate = Math.max(1, Math.min(40, count));
-
-      const createdList: LectureDoc[] = [];
-      for (let i = 0; i < toCreate; i++) {
-        const num = String(startNum + i).padStart(2, '0');
-        const id = sanitizeId(`lec_${chapterId}_${num}_${Date.now()}_${i}`);
-        createdList.push({
-          id,
-          uid: activeUid,
-          title: `L${num}: ${ch.title} — Lecture ${startNum + i}`,
-          subject: ch.subject,
-          chapterId: ch.id,
-          chapterTitle: ch.title,
-          durationMinutes: 90,
-          playbackSpeed: 1.5,
-          actualWatchMinutes: 60,
-          completed: false,
-          completedDate: '',
-          notes: `High-yield ${ch.title} lecture ${startNum + i} notes & PYQs.`,
-        });
-      }
+      const createdList = getNextDronaLecturesForChapter(
+        ch,
+        existingForCh.length,
+        count,
+        activeUid
+      );
 
       setLectures((prev) => [...createdList, ...prev]);
 

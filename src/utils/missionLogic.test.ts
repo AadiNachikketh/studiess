@@ -7,6 +7,7 @@ import {
   computeAnalyticsReport,
   generateInitialMissionData,
   generateCSVExport,
+  getNextDronaLecturesForChapter,
 } from './missionLogic';
 
 test('calculateActualWatchMinutes computes watching time accurately from duration and speed', () => {
@@ -15,7 +16,7 @@ test('calculateActualWatchMinutes computes watching time accurately from duratio
   assert.equal(calculateActualWatchMinutes(120, 1.0), 120);
 });
 
-test('generateInitialMissionData preloads Organic Chemistry (32) and Physical Chemistry (47) and 8 default tasks', () => {
+test('generateInitialMissionData preloads Drona 2.0 Organic Chemistry (32) and Physical Chemistry (47) and 8 default tasks', () => {
   const seed = generateInitialMissionData('user_test', 'Aadi', 'aadi@example.com', '2026-11-07');
   assert.equal(seed.profile.challengeDurationDays, 21);
   assert.equal(seed.profile.physicsDailyTarget, 7);
@@ -30,19 +31,26 @@ test('generateInitialMissionData preloads Organic Chemistry (32) and Physical Ch
   assert.equal(organic.totalLectures, 32);
   assert.equal(physical.totalLectures, 47);
 
+  // Verify getNextDronaLecturesForChapter pulls exact Drona 2.0 subtopics
+  const nextOrgBatch = getNextDronaLecturesForChapter(organic, 10, 5, 'user_test');
+  assert.equal(nextOrgBatch.length, 5);
+  assert.ok(nextOrgBatch[0].title.includes('ORG-L11'), 'Should pull exact Drona 2.0 ORG-L11 lecture');
+
   const defaultTasks = seed.tasks.filter((t) => t.isDefault);
   assert.equal(defaultTasks.length, 8);
 });
 
 test('computeDashboardSummary updates completed today, remaining today, and backlog percentage', () => {
   const seed = generateInitialMissionData('user_test', 'Aadi', 'aadi@example.com', '2026-11-07');
+  const chemLectures = seed.lectures.filter((l) => l.subject === 'Chemistry');
+  const physLectures = seed.lectures.filter((l) => l.subject === 'Physics');
   // Mark 2 Chemistry lectures and 1 Physics lecture completed today
-  seed.lectures[0].completed = true;
-  seed.lectures[0].completedDate = '2026-11-07';
-  seed.lectures[1].completed = true;
-  seed.lectures[1].completedDate = '2026-11-07';
-  seed.lectures[10].completed = true;
-  seed.lectures[10].completedDate = '2026-11-07';
+  chemLectures[0].completed = true;
+  chemLectures[0].completedDate = '2026-11-07';
+  chemLectures[1].completed = true;
+  chemLectures[1].completedDate = '2026-11-07';
+  physLectures[0].completed = true;
+  physLectures[0].completedDate = '2026-11-07';
 
   const summary = computeDashboardSummary(seed.profile, seed.chapters, seed.lectures, '2026-11-07');
   assert.equal(summary.dailyTargetTotal, 20);

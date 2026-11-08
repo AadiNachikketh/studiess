@@ -8,9 +8,11 @@ import {
   Check,
   X,
   AlertCircle,
+  CalendarClock,
 } from 'lucide-react';
 import { useMission } from '../context/MissionContext';
 import { PriorityLevel, TaskCategory, TaskDoc } from '../types/mission';
+import { DRONA_TEST_MILESTONES, DronaTestMilestone } from '../utils/dronaSyllabus';
 
 export const DailyPlannerView: React.FC = () => {
   const {
@@ -69,6 +71,17 @@ export const DailyPlannerView: React.FC = () => {
     setTaskTitle('');
   };
 
+  const handleAddDronaMilestone = async (m: DronaTestMilestone) => {
+    await addTask({
+      title: `${m.title} — ${m.syllabusNote}`,
+      category: m.type === 'Revision' ? 'Revision' : 'General',
+      priority: m.priority,
+      deadline: m.date,
+      date: m.date,
+      niosType: 'None',
+    });
+  };
+
   const startEditTask = (t: TaskDoc) => {
     setEditingTaskId(t.id);
     setEditTaskTitle(t.title);
@@ -108,10 +121,10 @@ export const DailyPlannerView: React.FC = () => {
       <div className="bg-[#111A2D] border border-[#1E293B] rounded-2xl p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white font-display">
-            Daily Mission Planner & Study Reflections
+            Drona JEE 2.0 2027 — Daily Planner & Test Schedule
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Includes your 8 default daily JEE & NIOS protocol tasks plus custom high-priority targets.
+            Includes your 8 default daily JEE & NIOS protocol tasks plus official Drona JEE 2.0 2027 Main & Advanced test milestones.
           </p>
         </div>
 
@@ -161,7 +174,7 @@ export const DailyPlannerView: React.FC = () => {
                   type="text"
                   value={taskTitle}
                   onChange={(e) => setTaskTitle(e.target.value)}
-                  placeholder="e.g., Solve 30 Electrochemistry PYQs"
+                  placeholder="e.g., Solve 30 Ionic Equilibrium PYQs"
                   className="w-full h-10 px-3 rounded-lg bg-[#0C1424] border border-[#1E293B] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#8B5CF6]"
                 />
               </div>
@@ -353,8 +366,56 @@ export const DailyPlannerView: React.FC = () => {
           </div>
         </div>
 
-        {/* Right 5 Cols: Daily Notes & Study Journal */}
+        {/* Right 5 Cols: Daily Notes & Drona JEE 2.0 Test Milestones */}
         <div className="lg:col-span-5 space-y-5">
+          {/* Official Drona JEE 2.0 2027 Test & Revision Schedule */}
+          <div className="bg-[#111A2D] border border-[#1E293B] rounded-2xl p-5 space-y-3.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <CalendarClock className="w-4 h-4 text-[#8B5CF6]" />
+                <h2 className="text-sm font-bold text-white font-display">
+                  Drona JEE 2.0 2027 Test Schedule (20 Milestones)
+                </h2>
+              </div>
+              <span className="text-[11px] text-slate-400 font-mono">Jun 2026 – Mar 2027</span>
+            </div>
+
+            <div className="max-h-72 overflow-y-auto pr-1 space-y-2">
+              {DRONA_TEST_MILESTONES.map((m) => {
+                const alreadyAdded = plannerTasks.some(
+                  (t) => t.id === m.id || t.title.startsWith(m.title)
+                );
+                return (
+                  <div
+                    key={m.id}
+                    className="p-3 rounded-xl bg-[#0C1424] border border-[#1E293B] flex items-start justify-between gap-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-white">{m.title}</div>
+                      <div className="text-[11px] text-slate-400 mt-0.5">{m.syllabusNote}</div>
+                      <div className="text-[10px] text-[#06B6D4] font-mono tabular-nums mt-1">
+                        Scheduled: {m.date} · {m.type}
+                      </div>
+                    </div>
+                    {alreadyAdded ? (
+                      <span className="text-[11px] text-emerald-400 font-mono shrink-0">
+                        In Planner
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleAddDronaMilestone(m)}
+                        className="px-2.5 py-1 rounded-lg bg-[#16223B] hover:bg-[#8B5CF6] border border-[#2B3954] text-[11px] font-semibold text-white shrink-0 transition-colors cursor-pointer"
+                      >
+                        +Track
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <form
             onSubmit={handleSaveNote}
             noValidate
