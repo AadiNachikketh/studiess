@@ -16,6 +16,21 @@
   <body class="bg-[#080D1B] text-slate-100 antialiased selection:bg-[#8B5CF6]/30 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if (
+        window.location.hostname.endsWith('github.io') &&
+        document.querySelector('script[src="/src/main.tsx"]')
+      ) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = './public/gh-pages/app.css';
+        document.head.appendChild(link);
+        var s = document.createElement('script');
+        s.type = 'module';
+        s.src = './public/gh-pages/app.js';
+        document.body.appendChild(s);
+      }
+    </script>
   </body>
 </html>
 
