@@ -1,0 +1,440 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile, challenge settings, and daily lecture targets for JEE MISSION 21.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Student display name",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Student email address",
+          "maxLength": 254
+        },
+        "challengeStartDate": {
+          "type": "string",
+          "description": "ISO date string (YYYY-MM-DD) when the 21-day mission started",
+          "maxLength": 20
+        },
+        "challengeDurationDays": {
+          "type": "number",
+          "description": "Total challenge duration in days (default 21)"
+        },
+        "totalBacklogTarget": {
+          "type": "number",
+          "description": "Total backlog lectures target (default 420)"
+        },
+        "physicsDailyTarget": {
+          "type": "number",
+          "description": "Daily Physics lecture target (default 7)"
+        },
+        "chemistryDailyTarget": {
+          "type": "number",
+          "description": "Daily Chemistry lecture target (default 7)"
+        },
+        "mathDailyTarget": {
+          "type": "number",
+          "description": "Daily Mathematics lecture target (default 6)"
+        },
+        "streakCount": {
+          "type": "number",
+          "description": "Current consecutive days study streak"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "email",
+        "challengeStartDate",
+        "challengeDurationDays",
+        "totalBacklogTarget",
+        "physicsDailyTarget",
+        "chemistryDailyTarget",
+        "mathDailyTarget",
+        "streakCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "DailyProgress": {
+      "title": "DailyProgress",
+      "description": "Daily progress telemetry for a specific date (YYYY-MM-DD) within the 21-day challenge.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "dayNumber": {
+          "type": "number"
+        },
+        "targetLectures": {
+          "type": "number"
+        },
+        "completedLectures": {
+          "type": "number"
+        },
+        "physicsCompleted": {
+          "type": "number"
+        },
+        "chemistryCompleted": {
+          "type": "number"
+        },
+        "mathCompleted": {
+          "type": "number"
+        },
+        "studyMinutes": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "date",
+        "dayNumber",
+        "targetLectures",
+        "completedLectures",
+        "physicsCompleted",
+        "chemistryCompleted",
+        "mathCompleted",
+        "studyMinutes",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "JEE subject configuration and aggregate lecture counts.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "enum": ["Physics", "Chemistry", "Mathematics"],
+          "maxLength": 50
+        },
+        "dailyTarget": {
+          "type": "number"
+        },
+        "totalLectures": {
+          "type": "number"
+        },
+        "completedLectures": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "name",
+        "dailyTarget",
+        "totalLectures",
+        "completedLectures",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Chapter": {
+      "title": "Chapter",
+      "description": "Subject chapter grouping lectures (e.g., Organic Chemistry: 32 lectures, Physical Chemistry: 47 lectures).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "subject": {
+          "type": "string",
+          "enum": ["Physics", "Chemistry", "Mathematics"],
+          "maxLength": 50
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "totalLectures": {
+          "type": "number"
+        },
+        "completedLectures": {
+          "type": "number"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["High", "Medium", "Low"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "subject",
+        "title",
+        "totalLectures",
+        "completedLectures",
+        "priority",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Lecture": {
+      "title": "Lecture",
+      "description": "Individual JEE backlog lecture item with duration, playback speed, actual watching time, and notes.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "subject": {
+          "type": "string",
+          "enum": ["Physics", "Chemistry", "Mathematics"],
+          "maxLength": 50
+        },
+        "chapterId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "chapterTitle": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "durationMinutes": {
+          "type": "number"
+        },
+        "playbackSpeed": {
+          "type": "number"
+        },
+        "actualWatchMinutes": {
+          "type": "number"
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "completedDate": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "title",
+        "subject",
+        "chapterId",
+        "chapterTitle",
+        "durationMinutes",
+        "playbackSpeed",
+        "actualWatchMinutes",
+        "completed",
+        "completedDate",
+        "notes",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Daily planner task or NIOS milestone task with priority, deadline, category, and completion status.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Physics", "Chemistry", "Mathematics", "Revision", "NIOS", "General"],
+          "maxLength": 30
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low"],
+          "maxLength": 20
+        },
+        "deadline": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "completed": {
+          "type": "boolean"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "niosType": {
+          "type": "string",
+          "enum": ["None", "Subject", "Assignment", "Practical", "ExamPrep", "Revision"],
+          "maxLength": 30
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "title",
+        "category",
+        "priority",
+        "deadline",
+        "date",
+        "completed",
+        "isDefault",
+        "niosType",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Daily planner reflection or study note.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "date": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "content": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "date",
+        "title",
+        "content",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile and challenge configuration document."
+    },
+    "/users/{uid}/dailyProgress/{date}": {
+      "schema": { "$ref": "#/entities/DailyProgress" },
+      "description": "Daily study progress and subject lecture counts per date."
+    },
+    "/users/{uid}/subjects/{subjectId}": {
+      "schema": { "$ref": "#/entities/Subject" },
+      "description": "JEE subject configuration and aggregate totals."
+    },
+    "/users/{uid}/chapters/{chapterId}": {
+      "schema": { "$ref": "#/entities/Chapter" },
+      "description": "Subject chapter definitions and lecture counts."
+    },
+    "/users/{uid}/lectures/{lectureId}": {
+      "schema": { "$ref": "#/entities/Lecture" },
+      "description": "Individual JEE backlog lectures."
+    },
+    "/users/{uid}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Daily planner and NIOS manager tasks."
+    },
+    "/users/{uid}/notes/{noteId}": {
+      "schema": { "$ref": "#/entities/Note" },
+      "description": "Daily study notes and reflections."
+    }
+  }
+}

@@ -1,0 +1,268 @@
+---
+name: Apex Vanguard
+colors:
+  surface: '#0e1321'
+  surface-dim: '#0e1321'
+  surface-bright: '#343949'
+  surface-container-lowest: '#090e1c'
+  surface-container-low: '#161b2a'
+  surface-container: '#1a1f2e'
+  surface-container-high: '#252a39'
+  surface-container-highest: '#2f3444'
+  on-surface: '#dee2f6'
+  on-surface-variant: '#cbc3d7'
+  inverse-surface: '#dee2f6'
+  inverse-on-surface: '#2b303f'
+  outline: '#958ea0'
+  outline-variant: '#494454'
+  surface-tint: '#d0bcff'
+  primary: '#d0bcff'
+  on-primary: '#3c0091'
+  primary-container: '#a078ff'
+  on-primary-container: '#340080'
+  inverse-primary: '#6d3bd7'
+  secondary: '#adc6ff'
+  on-secondary: '#002e6a'
+  secondary-container: '#0566d9'
+  on-secondary-container: '#e6ecff'
+  tertiary: '#4ae176'
+  on-tertiary: '#003915'
+  tertiary-container: '#00a74b'
+  on-tertiary-container: '#003111'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e9ddff'
+  primary-fixed-dim: '#d0bcff'
+  on-primary-fixed: '#23005c'
+  on-primary-fixed-variant: '#5516be'
+  secondary-fixed: '#d8e2ff'
+  secondary-fixed-dim: '#adc6ff'
+  on-secondary-fixed: '#001a42'
+  on-secondary-fixed-variant: '#004395'
+  tertiary-fixed: '#6bff8f'
+  tertiary-fixed-dim: '#4ae176'
+  on-tertiary-fixed: '#002109'
+  on-tertiary-fixed-variant: '#005321'
+  background: '#0e1321'
+  on-background: '#dee2f6'
+  surface-variant: '#2f3444'
+typography:
+  headline-xl:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 40px
+    fontWeight: '700'
+    lineHeight: 48px
+    letterSpacing: -0.03em
+  headline-xl-mobile:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 30px
+    fontWeight: '700'
+    lineHeight: 38px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 28px
+    fontWeight: '600'
+    lineHeight: 36px
+    letterSpacing: -0.02em
+  headline-md:
+    fontFamily: Plus Jakarta Sans
+    fontSize: 22px
+    fontWeight: '600'
+    lineHeight: 28px
+    letterSpacing: -0.015em
+  title-lg:
+    fontFamily: Inter
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 24px
+    letterSpacing: -0.01em
+  title-md:
+    fontFamily: Inter
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 22px
+    letterSpacing: -0.01em
+  body-lg:
+    fontFamily: Inter
+    fontSize: 15px
+    fontWeight: '400'
+    lineHeight: 22px
+    letterSpacing: 0em
+  body-md:
+    fontFamily: Inter
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Inter
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+    letterSpacing: 0.01em
+  label-md:
+    fontFamily: Inter
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.02em
+  label-xs:
+    fontFamily: Inter
+    fontSize: 10px
+    fontWeight: '700'
+    lineHeight: 12px
+    letterSpacing: 0.06em
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  gutter: 1.25rem
+  gutter-mobile: 0.75rem
+  margin: 2rem
+  margin-mobile: 1rem
+  space-xs: 0.25rem
+  space-sm: 0.5rem
+  space-md: 1rem
+  space-lg: 1.5rem
+  space-xl: 2.25rem
+---
+
+## Brand & Style
+
+This design system is tailored for elite, high-stakes academic preparation. It translates the rigorous discipline of competitive exam preparation into a high-performance, developer-grade software interface. Rooted in the visual precision of modern SaaS benchmarks like Linear and Raycast, the experience merges hyper-efficient cognitive utility with an immersive, distraction-free atmosphere.
+
+### Brand Character & Emotional Stance
+- **Command & Control:** The interface feels like a mission telemetry deck rather than a casual study timer. It instills accountability, momentum, and operational clarity.
+- **Deep Focus:** Uncompromising dark surfaces eliminate retinal fatigue over multi-hour problem-solving marathons.
+- **Visual Velocity:** High contrast micro-accents provide immediate visual gratification for completed syllabus targets, active streaks, and mock performance deltas.
+
+### Aesthetic Movement
+The aesthetic synthesizes **Precision Minimal-Tech** with **Tonal Glassmorphism**:
+- Deep cosmic slate canvas paired with structured tiered layers.
+- Razor-sharp single-pixel border delineations with localized top-edge gradient luminescence.
+- Dense information hierarchy elevated by clear visual breathing room and metric-first tabular typography.
+
+## Colors
+
+The palette uses a luminous deep-slate base complemented by electric spectral accents. Surfaces stack from deep background to elevated glass without washing out legibility.
+
+### Surface Hierarchy
+- **Canvas / Abyss:** `#080D1B` â€” Base canvas for the entire viewport.
+- **Surface Level 1 (Panels / Base Containers):** `#111A2D` â€” Structural sidebars, content grouping modules.
+- **Surface Level 2 (Interactive Cards / Popovers):** `#16223B` â€” Foreground modules, hover states, metric monitors.
+- **Border Default:** `#1E293B` â€” Structural hairline rules (1px).
+- **Border Active / Highlight:** `#2B3954` â€” Focused containers, interactive hover rules.
+
+### Functional & Domain Accents
+- **Core Engine (Primary):** `#8B5CF6` (Electric Purple) â€” Brand identity, primary CTAs, active focus states.
+- **Velocity (Secondary):** `#3B82F6` (Electric Azure) â€” Telemetry graphs, secondary links, active sessions.
+- **Completion / Success:** `#22C55E` (Neon Emerald) â€” 100% syllabus masteries, accuracy spikes, solved markers.
+- **Subject Specialization:**
+  - **Physics (Electrodynamics / Waves):** `#06B6D4` (Cyan) to `#3B82F6` (Blue).
+  - **Chemistry (Organic / Physical):** `#F59E0B` (Vibrant Amber) to `#F97316` (Neon Orange).
+  - **Mathematics (Calculus / Algebra):** `#10B981` (Emerald) to `#14B8A6` (Teal).
+
+## Typography
+
+Typography prioritizes computational clarity and optical balance.
+
+- **Display & Headings:** `Plus Jakarta Sans` provides geometric modernity with balanced counter-forms, avoiding sterile corporate rigidity while conveying disciplined authority.
+- **Operational Data & Body:** `Inter` ensures flawless micro-legibility at 10pxâ€“14px sizes.
+- **Tabular Figures & Metrics:** All numeric tallies, timers, percentile trackers, and rank monitors must activate OpenType tabular numbers (`tnum`) and slashed zero (`zero`) to prevent metric jitter during real-time updates.
+- **Caps Hierarchy:** Micro labels and metadata chips make controlled use of uppercase tracking (`letter-spacing: 0.06em`) at sizes between 10px and 12px for immediate section scanning.
+
+## Layout & Spacing
+
+The system runs on a 4px/8px hybrid spacing grid optimized for high-density analytical dashboards.
+
+### Grid Architecture
+- **Desktop (HL
+NŠŠˆL‹XÛÛ[[ˆ\Ş[[Y]šXÈ›ZYÜšYÚ]\›X[™[ZXÜ›Ë[˜]šYØ][Ûˆ˜Z[
+ÛÛ\ÙY^[™Y
+KˆŒ
+KŒ\™[X
+Hİ]\œÈ[œİ\™H[œÙH[˜[]XØ[Ü›İ\[™ÈÚ]İ]š\İX[ÛÛ\Ú[Û‹‚‹H
+Š•X›]
+ÍHLÎ\
+NŠŠˆXÛÛ[[ˆ^[İ]Ú]ÛY[™ÈÚY]˜]È[™[ÎÈİ]\ˆX\™Ú[œÈÛÛ\™\ÜÈÈŒ‚‹H
+Š“[Øš[H
+Í
+NŠŠˆXÛÛ[[ˆ^[İ]Èİ]\ˆÛÛ\™\ÜÙ\ÈÈLœ
+Í\™[X
+Kİ]\ˆØÜ™Y[ˆY[™È›ÜÈÈMœ
+\™[X
+Kˆ[œÙH[˜[]XÜÈ™Y›İÈ[ÈÜš^›Û[HİÚ\XX›HØ\™ÈÜˆÚ[™ÛKXÛÛ[[ˆİXÚÙY[[Y]H›İÜË‚‚ˆÈÈÈÜXÚ[™È\ØÚ\[™B‹H[\›˜[Ø\™Y[™È\Èİ[™\™^™Y]KŒ\™[X
+Œ
+H›Üˆİ[™\™ÚYÙ]È[™K\™[X
+
+H›Üˆ\›ÈY]šXÜË‚‹HÛÛ\Û™[Z[\›˜[[[Y[È\ÙHYÚ\ˆÛ\˜[˜Ù\Îˆ›ÜˆXÛÛ‹[X™[Z\š[™Ë™]ÙY[ˆšY[X™[È[™[œ]Ë[™Lœ™]ÙY[ˆ]HÛ\İ\œÈ[™İ\Ü[™È]HX›\Ë‚‚ˆÈÈ[]˜][Ûˆ	ˆ\‚‘\]›ÚYÈ\˜š]˜\H›\œ™Y›XÚÈÚYİÜËˆ[œİXY]™[Y\ÈÛˆÛ˜[İXÚÚ[™ËZ\›[™H[[Z[˜][Ûˆ›Ü™\œË[™][ÜÜ\šXÈ[XšY[ÛİÜË‚‚ˆÈÈÈ[]˜][Ûˆ]™[Â‚ŒKˆ
+Š“]™[
+›ÛÜˆØ[˜\ÊNŠŠˆ›]ÌP˜ˆ›È›Ü™\œË›ÈÚYİÜË‚Œ‹ˆ
+Š“]™[H
+ØÚÙY[™[È	ˆ˜\ÙHÜšYØ\™ÊNŠŠˆİ\™˜XÙHÌLLPL‘›İ[™YHHÚ[™ÛK\^[ÛÛ[[İ\Èİ][™HÙˆÌQLLĞ˜‚ŒËˆ
+Š“]™[ˆ
+Xİ]™H[Ù[\È	ˆ[]˜]YØ\™ÊNŠŠˆİ\™˜XÙHÌMŒŒŒĞ˜ˆZ\›[™H›Ü™\ˆ[YÌŒÎMMˆ™X]\™\È[ˆ[›™\ˆÜYYÙHYÚYÚ\Ú[™ÈH[™X\ˆÜ˜YY[İ™\›^Nˆ[™X\‹YÜ˜YY[
+NYË™Ø˜JMKMKMKŒŠH	K™Ø˜JMKMKMKŒ
+HL	JX‚ˆ
+Š“]™[È
+ÛÛ[X[™[]\ËÜİ™\œÈ	ˆX[ÙÜÊNŠŠˆÙ[ZK]˜[œÜ\™[ÌLLPL‘]IHÜXÚ]H˜XÚÙYH˜XÚÙ›ÜYš[\ˆ›\ŠMœ
+Xˆ›Ü™\ˆ™XÙZ]™\È[ˆ[XİšXÈXØÙ[YÚYÚ
+™Ø˜JLÎKL‹‹ŒÊX
+KˆÛÙ[XšY[›ÜÚYİÎˆŒLM\™Ø˜JÊX‚‚ˆÈÈÈ[Z[™\ØÙ[XØÙ[Â”İ]H[™XØ]ÜœÈ
+K™Ë‹Xİ]™HÛ[ÙÜ›ËN]\˜Ù[[HÛØ[]™H\İÙ\ÜÚ[ÛŠHØ\İHØØ[^™YÜXØ[ÛİÎ‚‹H\œHÛİÎˆ›Ş\ÚYİÎˆŒLÜ™Ø˜JLÎKL‹‹ŒÍJX‹HŞX[ˆÛİÎˆ›Ş\ÚYİÎˆŒLÜ™Ø˜J‹N‹ŒL‹ŒÍJX‹H[Y\˜[ÛİÎˆ›Ş\ÚYİÎˆŒLÜ™Ø˜JÍNMËMŒÍJX‚ˆÈÈÚ\\Â‚•HÙ[ÛY]šXÈÚYÛ˜]\™H\Ù\È[šYšYYİ\˜]\™NˆİXİ\™Y[Ù\›‹[™\İ[˜İ]™[H›İ[™YÚ]İ]šY[™È[È^Y[ÜˆØ\İX[Y\İ]XÜË‚‚ˆÈÈÈ˜YZHØØ[B‹H
+Š”ÛX[ÛÛ›ÛÈ
+]ÛœË[œ]Ëİ]\È[Ë˜YÙ\ÊNŠŠˆÈL8 %ÛÛ\Xİ[™Xİ[K‚‹H
+Š”İ[™\™İ\™˜XÙHØ\™È	ˆÛÛZ[™\œÎŠŠˆMœ
+›İ[™Y[Ø
+H8 %İ[™\™İ\™HXÜ›ÜÜÈ\Ú›Ø\™[Ù[\ËİYHÙÜË[™\İ™\ÜØ\™Ë‚‹H
+Š“XZ›Üˆ›Øİ\È[Ù[\È	ˆX[ÙÈÚ[™İÜÎŠŠˆNÈŒ
+›İ[™Y^
+H8 %š[X\HİYHšY]ÜÜË[ØÚÈ^[HšY]Ùš[™\œË‚‹H
+Š”[ÈÚ\˜İ[\ˆ
+ZXÜ›È˜YÙ\Ë]˜]\œË›ÙÜ™\ÜÈ˜XÚÙ\œÊNŠŠˆNNN\8 %^Û\Ú]™[H™\Ù\™Y›Üˆİ]\ÈİËYÜËİ™XZÈš[™ÜË[™XÛÛˆÜ˜\\œË‚‚ˆÈÈÛÛ\Û™[Â‚ˆÈÈÈ]ÛœÈ	ˆ[\˜Xİ]™HšYÙÙ\œÂ‹H
+Š”š[X\HXİ[Ûˆ
+Z\ÜÚ[Ûˆ›Øİ\ÊNŠŠˆÛÛY[XİšXÈ\œH
+ÎPÑ˜
+H˜XÚÙÜ›İ[™Ú]Ú]HX™[ˆÜYYÙH[›™\ˆÛİÈ
+[œÙ]\™Ø˜JMKMKMKŒJX
+Kˆİ™\ˆ[]˜]\ÈÚ][ˆ[XšY[\œH[ËˆXİ]™Hİ]H\™\ÜÙ\ÈİXHH\ØØ[H˜[œÙ›Ü›K‚‹H
+Š”ÙXÛÛ™\H
+ÚÜİÛ\ÜÊNŠŠˆ˜[œÜ\™[˜XÚÙÜ›İ[™Ú]\›Ü™\ˆÙˆÌŒÎMMš[[™ÈÚ]™Ø˜JMKMKMKŒ
+XÛˆİ™\‹‚‹H
+ŠÛÛ[X[™ÈÚÜİ]]ÛœÎŠŠˆ[Û›ÜÜXÙYÙ^X›Ø\™[™XØ]Üˆ
+8£&Ø
+H™\İY[œÚYHİ\™˜XÙK[]™[˜YÙ\ÈÚ]ÛÜ›™\ˆ˜YZK‚‚ˆÈÈÈØ\™È	ˆY]šXÈÛÛZ[™\œÂ‹HZ[Ûˆİ\™˜XÙH]™[H
+ÌLLPL‘
+HÜˆ]™[ˆ
+ÌMŒŒŒĞ˜
+K‚‹HÛÛZ[™YÚ][ˆMœÛÜ›™\ˆ˜YZH[™\›Ü™\ˆÌQLLĞ˜‚‹HXY\ˆİ\Ù\Èİ[™\™Y]Y]NˆZXÜ›È\\˜Ø\ÙHÙXİ[Ûˆ˜[YKXÛÛˆ[˜ÚÜ‹[™Xİ[Ûˆ[\Ú\Ë‚‹HY]šXÈ˜[Y\È\ÙHXY[™K[ØÚ]X[\ˆšYİ\™\ÈZ\™YÚ]œ˜Xİ[Û˜[\˜Ù[YÙH[HÚ\Ë‚‚ˆÈÈÈÚ\È	ˆİXš™Xİ˜YÙ\Â‹HZYÚˆ8 $ÌœÈY[™ÎˆL‚‹HZ[š[X[›Ü™\ˆİ[[™Îˆ\İ][™HZ\™YÚ][ˆ	H˜XÚÙÜ›İ[™[ÙˆH™\ÜXİ]™HİXš™XİXØÙ[ÛÛÜ‚ˆH
+”\ÚXÜÎŠˆŞX[ˆ^Ì‘˜XÚÙÜ›İ[™™Ø˜J‹N‹ŒL‹Œ
+X›Ü™\ˆ™Ø˜J‹N‹ŒL‹ŒŠX‚ˆH
+Ú[Z\İNŠˆ[X™\ˆ^ÑNQL˜˜XÚÙÜ›İ[™™Ø˜JKMNLKŒ
+X›Ü™\ˆ™Ø˜JKMNLKŒŠX‚ˆH
+“X][X]XÜÎŠˆ[Y\˜[^ÌLNX˜XÚÙÜ›İ[™™Ø˜JM‹NKLKŒ
+X›Ü™\ˆ™Ø˜JM‹NKLKŒŠX‚‚ˆÈÈÈ[œ]È	ˆÙX\˜Ú˜\œÂ‹H˜XÚÙÜ›İ[™ÌÌMÙ]Ú][ˆ\›Ü™\ˆÌQLLĞ˜‚‹HZYÚˆ
+Y˜][
+K
+ÛØ˜[Û[šX˜\ˆÙX\˜Ú
+K‚‹H›Øİ\Èİ]Nˆ›Ü™\ˆ[˜[ZXØ[HÚYÈÈ[XİšXÈ\œH
+ÎPÑ˜
+HÚ]HÜİ]\ˆ]\˜H]™Ø˜JLÎKL‹‹ŒMJX‚‹H˜Z[[™ÈÛÛ[X[™È›İšYHXÚYHXÛÛˆÚÜİ]È[™[œİ[ÛX\ˆšYÙÙ\œË‚‚ˆÈÈÈÚ\˜İ[\ˆš[™ÜÈ	ˆ[[Y]H›ÙÜ™\ÜÈ˜\œÂ‹H[™X\ˆ˜XÚÈ˜XÚÙÜ›İ[™ˆÌMŒŒŒĞ˜
+\İ][™HÌQLLĞ˜
+KZYÚœÈ‚‹H›ÙÜ™\ÜÈš[È][^™Hš]šYÜ˜YY[İÙY\Îˆ\ÚXÜÈ
+Ì‘ÈÌĞ‘˜
+KÚ[Z\İH
+ÑNQL˜ÈÑQ
+Kİ™\˜[›ÙÜ™\ÜÈ
+ÎPÑ˜ÈÌĞ‘˜
+K‚‹HÚ\˜İ[\ˆY]\œÈ
+Z[H]Y\İ[Ûˆ][İK\˜Ù[[HÛØ[
+H\ÙHÕ‘ÜÈÚ]İ›ÚÙK[[™XØ\ˆ›İ[™[™HÛÙ›Ü\ÚYİÈš[\ˆÛˆHXY[™Èİ›ÚÙH\‚‚ˆÈÈÈÙ[Xİ[ÛˆÛÛ›ÛÈ
+ÚXÚØ›Ş\È	ˆ˜Y[ÜÊB‹H›Ş›Ûİš[ˆN0åÈNÚ]\ÛÜ›™\ˆ˜Y]\Ë‚‹H[˜ÚXÚÙYˆÌÌMš[Ú]ÌŒÎMM›Ü™\‹‚‹HÚXÚÙYˆÎPÑ˜š[Üš\ÜÚ]HK\ÚXÚÛX\šÈ][™[ˆXİ]™H™[ÛˆÛİË

@@ -1,0 +1,355 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(uid) {
+      return isVerified() && request.auth.uid == uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function parentUserExists(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid));
+    }
+
+    // Entity Blueprint Validators
+    function isValidUserProfile(data) {
+      return data.keys().hasAll([
+        'uid', 'displayName', 'email', 'challengeStartDate',
+        'challengeDurationDays', 'totalBacklogTarget',
+        'physicsDailyTarget', 'chemistryDailyTarget', 'mathDailyTarget',
+        'streakCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'displayName', 'email', 'challengeStartDate',
+        'challengeDurationDays', 'totalBacklogTarget',
+        'physicsDailyTarget', 'chemistryDailyTarget', 'mathDailyTarget',
+        'streakCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 254 &&
+      data.challengeStartDate is string && data.challengeStartDate.size() >= 8 && data.challengeStartDate.size() <= 20 &&
+      data.challengeDurationDays is number && data.challengeDurationDays >= 1 && data.challengeDurationDays <= 365 &&
+      data.totalBacklogTarget is number && data.totalBacklogTarget >= 1 && data.totalBacklogTarget <= 2000 &&
+      data.physicsDailyTarget is number && data.physicsDailyTarget >= 0 && data.physicsDailyTarget <= 50 &&
+      data.chemistryDailyTarget is number && data.chemistryDailyTarget >= 0 && data.chemistryDailyTarget <= 50 &&
+      data.mathDailyTarget is number && data.mathDailyTarget >= 0 && data.mathDailyTarget <= 50 &&
+      data.streakCount is number && data.streakCount >= 0 && data.streakCount <= 365 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidDailyProgress(data) {
+      return data.keys().hasAll([
+        'uid', 'date', 'dayNumber', 'targetLectures', 'completedLectures',
+        'physicsCompleted', 'chemistryCompleted', 'mathCompleted',
+        'studyMinutes', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'date', 'dayNumber', 'targetLectures', 'completedLectures',
+        'physicsCompleted', 'chemistryCompleted', 'mathCompleted',
+        'studyMinutes', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.date is string && data.date.size() >= 8 && data.date.size() <= 20 &&
+      data.dayNumber is number && data.dayNumber >= 1 && data.dayNumber <= 365 &&
+      data.targetLectures is number && data.targetLectures >= 0 && data.targetLectures <= 150 &&
+      data.completedLectures is number && data.completedLectures >= 0 && data.completedLectures <= 200 &&
+      data.physicsCompleted is number && data.physicsCompleted >= 0 && data.physicsCompleted <= 100 &&
+      data.chemistryCompleted is number && data.chemistryCompleted >= 0 && data.chemistryCompleted <= 100 &&
+      data.mathCompleted is number && data.mathCompleted >= 0 && data.mathCompleted <= 100 &&
+      data.studyMinutes is number && data.studyMinutes >= 0 && data.studyMinutes <= 1440 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidSubject(data) {
+      return data.keys().hasAll([
+        'uid', 'name', 'dailyTarget', 'totalLectures',
+        'completedLectures', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'name', 'dailyTarget', 'totalLectures',
+        'completedLectures', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.name is string && data.name.size() <= 50 &&
+      (data.name == 'Physics' || data.name == 'Chemistry' || data.name == 'Mathematics') &&
+      data.dailyTarget is number && data.dailyTarget >= 0 && data.dailyTarget <= 50 &&
+      data.totalLectures is number && data.totalLectures >= 0 && data.totalLectures <= 1000 &&
+      data.completedLectures is number && data.completedLectures >= 0 && data.completedLectures <= 1000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidChapter(data) {
+      return data.keys().hasAll([
+        'uid', 'subject', 'title', 'totalLectures',
+        'completedLectures', 'priority', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'subject', 'title', 'totalLectures',
+        'completedLectures', 'priority', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.subject is string && data.subject.size() <= 50 &&
+      (data.subject == 'Physics' || data.subject == 'Chemistry' || data.subject == 'Mathematics') &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+      data.totalLectures is number && data.totalLectures >= 0 && data.totalLectures <= 500 &&
+      data.completedLectures is number && data.completedLectures >= 0 && data.completedLectures <= 500 &&
+      data.priority is string && data.priority.size() <= 20 &&
+      (data.priority == 'High' || data.priority == 'Medium' || data.priority == 'Low') &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidLecture(data) {
+      return data.keys().hasAll([
+        'uid', 'title', 'subject', 'chapterId', 'chapterTitle',
+        'durationMinutes', 'playbackSpeed', 'actualWatchMinutes',
+        'completed', 'completedDate', 'notes', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'title', 'subject', 'chapterId', 'chapterTitle',
+        'durationMinutes', 'playbackSpeed', 'actualWatchMinutes',
+        'completed', 'completedDate', 'notes', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+      data.subject is string && data.subject.size() <= 50 &&
+      (data.subject == 'Physics' || data.subject == 'Chemistry' || data.subject == 'Mathematics') &&
+      data.chapterId is string && data.chapterId.size() >= 1 && data.chapterId.size() <= 128 &&
+      data.chapterTitle is string && data.chapterTitle.size() >= 1 && data.chapterTitle.size() <= 120 &&
+      data.durationMinutes is number && data.durationMinutes >= 1 && data.durationMinutes <= 600 &&
+      data.playbackSpeed is number && data.playbackSpeed >= 0.5 && data.playbackSpeed <= 4 &&
+      data.actualWatchMinutes is number && data.actualWatchMinutes >= 1 && data.actualWatchMinutes <= 600 &&
+      data.completed is bool &&
+      data.completedDate is string && data.completedDate.size() <= 20 &&
+      data.notes is string && data.notes.size() <= 2000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidTask(data) {
+      return data.keys().hasAll([
+        'uid', 'title', 'category', 'priority', 'deadline',
+        'date', 'completed', 'isDefault', 'niosType', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'title', 'category', 'priority', 'deadline',
+        'date', 'completed', 'isDefault', 'niosType', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+      data.category is string && data.category.size() <= 30 &&
+      (data.category == 'Physics' || data.category == 'Chemistry' || data.category == 'Mathematics' || data.category == 'Revision' || data.category == 'NIOS' || data.category == 'General') &&
+      data.priority is string && data.priority.size() <= 20 &&
+      (data.priority == 'Critical' || data.priority == 'High' || data.priority == 'Medium' || data.priority == 'Low') &&
+      data.deadline is string && data.deadline.size() <= 30 &&
+      data.date is string && data.date.size() <= 20 &&
+      data.completed is bool &&
+      data.isDefault is bool &&
+      data.niosType is string && data.niosType.size() <= 30 &&
+      (data.niosType == 'None' || data.niosType == 'Subject' || data.niosType == 'Assignment' || data.niosType == 'Practical' || data.niosType == 'ExamPrep' || data.niosType == 'Revision') &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidNote(data) {
+      return data.keys().hasAll([
+        'uid', 'date', 'title', 'content', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'date', 'title', 'content', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid == request.auth.uid &&
+      data.uid is string && data.uid.size() <= 128 &&
+      data.date is string && data.date.size() >= 8 && data.date.size() <= 20 &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+      data.content is string && data.content.size() <= 5000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 1. User Profile Collection
+    match /users/{uid} {
+      allow get: if isOwner(uid) && isValidId(uid);
+      allow create: if isOwner(uid) && isValidId(uid) && isValidUserProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isOwner(uid) && isValidId(uid) && isValidUserProfile(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName', 'challengeStartDate', 'challengeDurationDays',
+          'totalBacklogTarget', 'physicsDailyTarget', 'chemistryDailyTarget',
+          'mathDailyTarget', 'streakCount', 'updatedAt'
+        ]);
+      allow delete: if isOwner(uid) && isValidId(uid);
+
+      // 2. Daily Progress Subcollection
+      match /dailyProgress/{date} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(date) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(date) &&
+          isValidDailyProgress(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(date) &&
+          isValidDailyProgress(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().date == existing().date &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'dayNumber', 'targetLectures', 'completedLectures',
+            'physicsCompleted', 'chemistryCompleted', 'mathCompleted',
+            'studyMinutes', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(date) && parentUserExists(uid);
+      }
+
+      // 3. Subjects Subcollection
+      match /subjects/{subjectId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(subjectId) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(subjectId) &&
+          isValidSubject(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(subjectId) &&
+          isValidSubject(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().name == existing().name &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'dailyTarget', 'totalLectures', 'completedLectures', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(subjectId) && parentUserExists(uid);
+      }
+
+      // 4. Chapters Subcollection
+      match /chapters/{chapterId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(chapterId) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(chapterId) &&
+          isValidChapter(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(chapterId) &&
+          isValidChapter(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'subject', 'title', 'totalLectures', 'completedLectures', 'priority', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(chapterId) && parentUserExists(uid);
+      }
+
+      // 5. Lectures Subcollection
+      match /lectures/{lectureId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(lectureId) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(lectureId) &&
+          isValidLecture(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(lectureId) &&
+          isValidLecture(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'title', 'subject', 'chapterId', 'chapterTitle',
+            'durationMinutes', 'playbackSpeed', 'actualWatchMinutes',
+            'completed', 'completedDate', 'notes', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(lectureId) && parentUserExists(uid);
+      }
+
+      // 6. Tasks Subcollection
+      match /tasks/{taskId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(taskId) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(taskId) &&
+          isValidTask(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(taskId) &&
+          isValidTask(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'title', 'category', 'priority', 'deadline',
+            'date', 'completed', 'isDefault', 'niosType', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(taskId) && parentUserExists(uid);
+      }
+
+      // 7. Notes Subcollection
+      match /notes/{noteId} {
+        allow get: if isOwner(uid) && isValidId(uid) && isValidId(noteId) && parentUserExists(uid);
+        allow list: if isOwner(uid) && existing().uid == request.auth.uid;
+        allow create: if isOwner(uid) && isValidId(uid) && isValidId(noteId) &&
+          isValidNote(incoming()) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          parentUserExists(uid);
+        allow update: if isOwner(uid) && isValidId(uid) && isValidId(noteId) &&
+          isValidNote(incoming()) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'date', 'title', 'content', 'updatedAt'
+          ]) &&
+          parentUserExists(uid);
+        allow delete: if isOwner(uid) && isValidId(uid) && isValidId(noteId) && parentUserExists(uid);
+      }
+    }
+  }
+}
